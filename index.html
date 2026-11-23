@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoSel: Cooperation as Selection for End-to-End Driving</title>
+<meta name="description" content="CoSel keeps an ego planner unchanged and lets information shared by roadside units and connected vehicles decide which of its candidate trajectories is executed.">
+<meta property="og:title" content="CoSel: Cooperation as Selection for End-to-End Driving">
+<meta property="og:description" content="Cooperative driving without retraining the planner: shared information selects among the candidates of an ego planner.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://camis-uga.github.io/CoSel/">
+<meta property="og:image" content="https://camis-uga.github.io/CoSel/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://camis-uga.github.io/CoSel/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23363636'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3ECS%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,400i,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+<style>
+body{font-family:'Noto Sans',system-ui,-apple-system,'Segoe UI',sans-serif;color:#363636}
+.publication-title{font-family:'Google Sans','Noto Sans',sans-serif;text-wrap:balance}
+.publication-authors{font-family:'Google Sans','Noto Sans',sans-serif}
+.publication-authors a{color:hsl(204,86%,45%)}
+.publication-authors a:hover{text-decoration:underline}
+.author-block{display:inline-block;margin:0 .35em}
+.publication-links{margin-top:.5rem}
+.link-block{display:inline-block;margin:4px 3px}
+.button[aria-disabled="true"]{opacity:.7;cursor:default;pointer-events:none}
+.button small{font-weight:400}
+.teaser .hero-body{padding-top:0;padding-bottom:3rem}
+.teaser img{display:block;height:auto;margin:0 auto;max-width:640px;width:100%}
+.teaser .subtitle{margin-top:1.25rem;max-width:760px;margin-left:auto;margin-right:auto;line-height:1.5}
+
+.band{background:#f5f5f5}
+h2.title{font-family:'Google Sans','Noto Sans',sans-serif}
+.figwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.figwrap img{display:block;width:100%;height:auto;min-width:680px}
+.caption{margin-top:1rem;font-size:.95rem;color:#4a4a4a;text-align:justify}
+.caption b{color:#363636}
+.caption.teasercap{max-width:680px;margin:1rem auto 0;text-align:center}
+.caption a,.footer a{text-decoration:underline}
+.band .figwrap{background:#fff;border-radius:8px;padding:.75rem}
+details{margin-top:.5rem}
+summary{cursor:pointer;color:hsl(204,86%,40%);width:fit-content}
+details p{margin-top:.5rem}
+.tablecard{margin-top:2.25rem}
+.tablecard h3{font-family:'Google Sans','Noto Sans',sans-serif}
+.tablecard h3.title{margin-bottom:.25rem}
+.tablecard .cap{font-size:.92rem;color:#4a4a4a;margin:.25rem 0 .9rem}
+.table-container{border-top:2px solid #363636;border-bottom:2px solid #363636;margin-bottom:0}
+table.results{font-size:.94rem;font-variant-numeric:tabular-nums;min-width:560px;margin-bottom:0!important;background:transparent}
+table.results th,table.results td{white-space:nowrap;text-align:center;vertical-align:middle;border-width:0;padding:.42em .8em}
+table.results thead th{font-weight:600;border-bottom:1px solid #363636;color:#363636}
+table.results thead tr:first-child th{border-bottom-width:0}
+table.results thead tr:last-child th{border-bottom:1px solid #363636}
+table.results tbody th{text-align:left;font-weight:400}
+.table.results thead th{text-align:center}
+table.results thead th:first-child{text-align:left}
+table.results tr.group th{font-style:italic;color:#666;font-size:.88rem;padding-top:.7em}
+table.results tbody+tbody{border-top:1px solid #b5b5b5}
+table.results tr.ours{background:#d6e9fb}
+table.results tr.ours th{font-weight:700}
+.bibhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;margin-bottom:1rem}
+.bibhead .title{margin-bottom:0}
+pre{font-size:.86rem;line-height:1.55;border-radius:6px;white-space:pre;overflow-x:auto}
+footer.footer{padding:2.5rem 1.5rem 3rem}
+:focus-visible{outline:2px solid hsl(204,86%,45%);outline-offset:3px}
+.button:focus-visible{outline:2px solid hsl(204,86%,45%);outline-offset:3px}
+@media (max-width:768px){
+  .publication-title{font-size:2rem!important}
+  .section{padding:2.5rem 1rem}
+  .caption{text-align:left}
+  #abstract .content{text-align:left!important}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">CoSel: Cooperation as Selection for End-to-End Driving</h1>
+          <div class="is-size-5 publication-authors"><span class="author-block">Yiping Li,</span>
+            <span class="author-block">Haohua Que,</span>
+            <span class="author-block">Zhipeng Bao,</span>
+            <span class="author-block">Wenjie Zhao,</span>
+            <span class="author-block">Qianwen Li</span></div>
+          <div class="is-size-5 publication-authors" style="margin-top:.35rem"><span class="author-block">University of Georgia</span></div>
+          <div class="publication-links">
+            <span class="link-block"><a href="CoSel.pdf" class="button is-normal is-rounded is-dark"><span class="icon"><i class="fas fa-file-pdf" aria-hidden="true"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><span class="button is-normal is-rounded is-dark" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv" aria-hidden="true"></i></span><span>arXiv <small>(coming soon)</small></span></span></span>
+            <span class="link-block"><span class="button is-normal is-rounded is-dark" aria-disabled="true"><span class="icon"><i class="fab fa-github" aria-hidden="true"></i></span><span>Code <small>(coming soon)</small></span></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <picture><source srcset="teaser.webp" type="image/webp"><img src="teaser.png" width="1600" height="1118" alt="Two bird's-eye views of the same street. Left: the ego planner cannot see a pedestrian behind a kiosk and its chosen trajectory collides. Right: with the detection shared by a roadside unit, CoSel executes a slower candidate of the same planner that stops before the crossing."></picture>
+      <h2 class="subtitle has-text-centered"><b>CoSel</b> leaves the ego planner unchanged: shared information only selects which of its candidate trajectories is executed.</h2>
+      <p class="caption teasercap">(a) An ego planner cannot see the pedestrian behind the kiosk, and its choice (red) leads to a collision. (b) CoSel keeps the same planner and its candidates (gray). With the detection shared by the RSU (purple, dashed), it executes another of these candidates in place of the planner’s choice: the one on the same path with a slower speed profile, which stops before the crossing (blue).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section band" id="abstract">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified"><p>Cooperative driving can extend a vehicle’s awareness beyond its own sensors, but existing cooperative end-to-end methods inject shared information into the planner and rely on cooperative driving demonstrations to learn how to use it. The moments in which shared information should change a driving decision are rare in such data, providing limited supervision for learning this behavior. We argue that cooperation need not be learned by the planner. Instead, reacting to shared information requires predicting how surrounding agents will move and selecting a response from the candidate trajectories of an ego planner. We introduce CoSel, a cooperation-as-selection framework that leaves the planner and its ego-only input unchanged. A separately trained cooperative predictor uses observations from the ego vehicle, roadside units, and connected automated vehicles to predict surrounding agents and their future motion. CoSel evaluates the planner’s candidate trajectories against these predictions, preserves the planner’s choice when it remains safe, and selects the closest safe alternative when shared information reveals additional risk. Each safety intervention is traceable to the shared evidence that triggers it. In closed-loop evaluation, CoSel achieves a driving score of 70.7 on V2Xverse, outperforming the best compared cooperative method by 7.5 points, and the highest average driving score of 85.8 on MDrive. Under missing ego detections, the collision count of CoSel increases only from 17 to 19 in 72 scenarios, compared with 19 to 32 for an existing cooperative end-to-end model.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="method">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method</h2>
+    <figure>
+      <div class="figwrap" tabindex="0" role="region" aria-label="Method overview figure, scrollable">
+        <picture><source srcset="overview.webp" type="image/webp"><img src="overview.png" width="2600" height="958" loading="lazy" alt="Overview diagram of CoSel in seven panels: the ego planner scores paths and speed profiles and proposes candidates; the cooperative predictor fuses ego, roadside-unit and connected-vehicle detections and predicts each agent's existence and motion; the selector tests each candidate's go and stop continuations against every agent and executes the candidate closest to the planner's choice that passes."></picture>
+      </div>
+      <figcaption class="caption"><b>Overview of CoSel.</b> The ego planner proposes candidates, the cooperative predictor turns the detections of the ego, RSUs and CAVs into predicted agents, and the selector executes the candidate closest to the planner's choice that passes for every agent. <a href="overview.png">Open the figure at full size</a>.
+        <details><summary>Panel-by-panel description</summary><p>(a–c) The ego planner scores paths and speed profiles from the ego’s own cameras and proposes its candidates (gray) and its choice (red). (d, e) The cooperative predictor takes the detections of the ego, RSUs and CAVs and predicts whether each agent exists and how it will move. (f) The selector tests every candidate against every agent of the scene for its two continuations: Go, the ego keeps executing the candidate, and Stop, the ego brakes to a standstill; a badge marks whether a continuation stays free of a predicted collision. A pair of bars belongs to one agent and gives the probability that Go (dark) and Stop (light) stay free of a collision with it. Gray bars are agents that the ego detects, purple bars agents that an RSU or a CAV reports, and the dashed line is the required level; a red bar marks the agent that caused the intervention. (g) The selector executes the candidate (blue dashed) closest to the planner’s choice (red dashed) among those that pass for every agent, searching in the order 1–5.</p></details></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section band" id="qualitative">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Qualitative Results</h2>
+    <figure>
+      <div class="figwrap" tabindex="0" role="region" aria-label="Qualitative results figure, scrollable">
+        <picture><source srcset="qualitative.webp" type="image/webp"><img src="qualitative.png" width="2600" height="664" loading="lazy" alt="Gallery of ten cases in two rows. Top row, infrastructure-to-vehicle cooperation: the ego stops for a pedestrian, slows for a car, stops for a cyclist, stops for a masked pedestrian, and changes path around a stationary vehicle. Bottom row, vehicle-to-vehicle cooperation: the ego waits or slows before the conflict zone of a connected vehicle with priority and then goes, turns or merges."></picture>
+      </div>
+      <figcaption class="caption"><b>What the selection changes.</b> I2V cooperation: an RSU reports an agent that the ego does not detect, and the ego stops or slows (a–d; in (d) the pedestrian is masked from the ego’s sensors). In (e) the roadside LiDAR reports a stationary vehicle in the planner’s path, and the ego takes another path. V2V cooperation: the ego waits or slows before the conflict zone of a CAV with priority and goes once that CAV has passed. In (e)–(j), left: the decision; right: afterward. The star marks where the planner’s choice is predicted to collide. <a href="qualitative.png">Open the figure at full size</a>.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section" id="results">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Quantitative Results</h2>
+    <p class="has-text-centered">Closed-loop evaluation on V2Xverse and MDrive. The highlighted row is CoSel.</p>
+    <div class="tablecard">
+      <h3 class="title is-5">V2Xverse-85</h3>
+      <p class="cap">Every method run by us on the same 85 route–scenario pairs. Ped / Veh / Lay: collisions per km. Bold: best in each group. DS: driving score. RC: route completion. IS: infraction score. Lay: layout.</p>
+      <div class="table-container" tabindex="0" role="region" aria-label="V2Xverse-85 results table"><table class="table results is-fullwidth">
+<thead>
+<tr><th scope="col">Method</th><th scope="col">DS↑</th><th scope="col">RC↑</th><th scope="col">IS↑</th><th scope="col">Ped↓</th><th scope="col">Veh↓</th><th scope="col">Lay↓</th></tr>
+</thead>
+<tbody>
+<tr class="group"><th colspan="7" scope="rowgroup"><i>Ego-only</i></th></tr>
+<tr><th scope="row">CoDriving No fusion</th><td>55.8</td><td><b>93.8</b></td><td>0.58</td><td>3.99</td><td>11.54</td><td>6.21</td></tr>
+<tr><th scope="row">TCP</th><td><b>66.7</b></td><td>80.7</td><td><b>0.83</b></td><td><b>2.71</b></td><td>2.88</td><td><b>0.51</b></td></tr>
+<tr><th scope="row">CoSel planner only</th><td>57.6</td><td>79.8</td><td>0.75</td><td>5.12</td><td><b>2.39</b></td><td>1.88</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><th colspan="7" scope="rowgroup"><i>Cooperative</i></th></tr>
+<tr><th scope="row">CoDriving Late fusion</th><td>63.2</td><td><b>96.3</b></td><td>0.65</td><td><b>2.85</b></td><td>8.15</td><td>5.43</td></tr>
+<tr><th scope="row">CoDriving Early fusion</th><td>56.7</td><td>92.9</td><td>0.60</td><td>3.88</td><td>12.25</td><td>2.54</td></tr>
+<tr><th scope="row">F-Cooper</th><td>50.8</td><td>93.5</td><td>0.54</td><td>6.40</td><td>9.59</td><td>6.95</td></tr>
+<tr><th scope="row">V2X-ViT</th><td>52.0</td><td>85.9</td><td>0.59</td><td>7.91</td><td>6.57</td><td><b>0.60</b></td></tr>
+<tr><th scope="row">CoDriving</th><td>59.1</td><td><b>96.3</b></td><td>0.61</td><td>4.21</td><td>9.11</td><td>5.98</td></tr>
+<tr class="ours"><th scope="row">CoSel</th><td><b>70.7</b></td><td>88.7</td><td><b>0.79</b></td><td>3.04</td><td><b>1.45</b></td><td>1.88</td></tr>
+</tbody>
+</table></div>
+    </div>
+    <div class="tablecard">
+      <h3 class="title is-5">MDrive</h3>
+      <p class="cap">DS / SR per subset and their mean. Baselines as published by the MDrive benchmark, rounded to one decimal; CoSel run by us. *rule-based variant. Bold: best in each group. SR: success rate.</p>
+      <div class="table-container" tabindex="0" role="region" aria-label="MDrive results table"><table class="table results is-fullwidth">
+<thead>
+<tr><td></td><th colspan="2" scope="col">InterDrive</th><th colspan="2" scope="col">Interaction</th><th colspan="2" scope="col">V2XPnP</th><th colspan="2" scope="col">Mean</th></tr>
+<tr><th scope="col">Method</th><th scope="col">DS</th><th scope="col">SR</th><th scope="col">DS</th><th scope="col">SR</th><th scope="col">DS</th><th scope="col">SR</th><th scope="col">DS</th><th scope="col">SR</th></tr>
+</thead>
+<tbody>
+<tr class="group"><th colspan="9" scope="rowgroup"><i>Ego-only</i></th></tr>
+<tr><th scope="row">TCP</th><td>83.6</td><td>67.8</td><td>75.8</td><td>55.3</td><td>71.0</td><td>58.7</td><td>76.8</td><td>60.6</td></tr>
+<tr><th scope="row">UniAD</th><td>57.5</td><td>26.4</td><td>53.1</td><td>31.1</td><td>72.6</td><td>68.5</td><td>61.0</td><td>42.0</td></tr>
+<tr><th scope="row">VAD</th><td>57.5</td><td>23.3</td><td>48.8</td><td>27.1</td><td>67.2</td><td>66.3</td><td>57.8</td><td>38.9</td></tr>
+<tr><th scope="row">LMDrive</th><td>56.7</td><td>27.1</td><td>57.5</td><td>29.1</td><td>71.6</td><td>69.6</td><td>61.9</td><td>41.9</td></tr>
+<tr><th scope="row">CoSel planner only</th><td>86.0</td><td>78.8</td><td>76.9</td><td>65.6</td><td>83.7</td><td>71</td><td>82.2</td><td>72</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><th colspan="9" scope="rowgroup"><i>Cooperative</i></th></tr>
+<tr><th scope="row">CoDriving</th><td>84.0</td><td>66.1</td><td>79.1</td><td><b>70.5</b></td><td>85.0</td><td>82.8</td><td>82.7</td><td>73.2</td></tr>
+<tr><th scope="row">CoLMDriver*</th><td>83.8</td><td>75.1</td><td>66.7</td><td>53.7</td><td>77.9</td><td>73.1</td><td>76.1</td><td>67.3</td></tr>
+<tr><th scope="row">CoLMDriver</th><td>85.3</td><td>76.9</td><td>67.9</td><td>51.9</td><td>78.3</td><td>75.4</td><td>77.2</td><td>68.1</td></tr>
+<tr class="ours"><th scope="row">CoSel</th><td><b>89.6</b></td><td><b>81.1</b></td><td><b>80.5</b></td><td>68.2</td><td><b>87.3</b></td><td><b>84.9</b></td><td><b>85.8</b></td><td><b>78.1</b></td></tr>
+</tbody>
+</table></div>
+    </div>
+  </div>
+</section>
+
+<section class="section band" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibhead"><h2 class="title is-3">BibTeX</h2><button class="button is-small is-rounded" type="button" id="copybib"><span class="icon is-small"><i class="far fa-copy" aria-hidden="true"></i></span><span id="copylabel" aria-live="polite">Copy</span></button></div>
+<pre id="bib" tabindex="0" role="region" aria-label="BibTeX entry"><code>@article{li2026cosel,
+  title   = {{CoSel}: Cooperation as Selection for End-to-End Driving},
+  author  = {Li, Yiping and Que, Haohua and Bao, Zhipeng and Zhao, Wenjie and Li, Qianwen},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>The layout of this page follows the <a href="https://nerfies.github.io">Nerfies</a> project page and the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var b=document.getElementById('copybib'), l=document.getElementById('copylabel');
+  function say(t,ms){ l.textContent=t; setTimeout(function(){l.textContent='Copy'},ms); }
+  b.addEventListener('click',function(){
+    var t=document.getElementById('bib').textContent;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){say('Copied',1600)},function(){
+      var r=document.createRange(); r.selectNodeContents(document.getElementById('bib')); var sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); say('Selected: press Ctrl/Cmd+C',2600);});
+  });
+})();
+</script>
+</body>
+</html>
